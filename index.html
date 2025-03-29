@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Stall Design Tool</title>
+    <style>
+        :root {
+            --primary-color: #4a6fa5;
+            --secondary-color: #ff7e5f;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px 0;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 8px;
+        }
+        
+        h1 {
+            margin-bottom: 10px;
+        }
+        
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .options-panel {
+            flex: 1;
+            min-width: 300px;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .visualization-panel {
+            flex: 2;
+            min-width: 400px;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .option-group {
+            margin-bottom: 25px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+        }
+        
+        .option-group:last-child {
+            border-bottom: none;
+        }
+        
+        .option-group h3 {
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
+        
+        .option-item {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .option-item label {
+            margin-left: 10px;
+            cursor: pointer;
+        }
+        
+        .option-item input[type="checkbox"],
+        .option-item input[type="radio"],
+        .option-item input[type="text"],
+        .option-item input[type="url"] {
+            cursor: pointer;
+        }
+        
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            margin-left: 15px;
+        }
+        
+        .quantity-control button {
+            width: 25px;
+            height: 25px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .quantity-control span {
+            margin: 0 10px;
+            min-width: 20px;
+            text-align: center;
+        }
+        
+        .layout-container {
+            flex-grow: 1;
+            position: relative;
+            border: 1px dashed #ccc;
+            margin-top: 20px;
+            background-color: #f9f9f9;
+            overflow: hidden;
+            min-height: 400px;
+        }
+        
+        .layout-item {
+            position: absolute;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            transition: all 0.3s ease;
+            cursor: move;
+        }
+        
+        .layout-item.selected {
+            outline: 2px solid var(--secondary-color);
+        }
+        
+        .custom-upload {
+            background-color: #f0f0f0;
+            border: 1px dashed var(--primary-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+        
+        .client-info {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: var(--light-color);
+            border-radius: 8px;
+        }
+        
+        .client-info h3 {
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+        
+        .client-info textarea,
+        .client-info input[type="url"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .client-info textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .upload-section {
+            margin-top: 15px;
+            padding: 15px;
+            background-color: var(--light-color);
+            border-radius: 8px;
+        }
+        
+        .upload-btn {
+            display: inline-block;
+            padding: 8px 15px;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+            border: none;
+        }
+        
+        #file-input {
+            display: none;
+        }
+        
+        .image-preview-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .image-preview {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 4px;
+            position: relative;
+        }
+        
+        .remove-image {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: red;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        
+        .submit-section {
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        .submit-btn {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            width: 100%;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 10px 0;
+            color: var(--primary-color);
+        }
+        
+        .success-message {
+            display: none;
+            text-align: center;
+            margin: 10px 0;
+            color: green;
+            font-weight: bold;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Advanced Stall Design Tool</h1>
+            <p>Create your perfect exhibition stall with complete customization</p>
+        </header>
+        
+        <div class="main-content">
+            <div class="options-panel">
+                <div class="option-group">
+                    <h3>Stall Size</h3>
+                    <div class="option-item">
+                        <input type="radio" id="size-small" name="stall-size" value="small" checked>
+                        <label for="size-small">Small (10x10 ft)</label>
+                    </div>
+                    <div class="option-item">
+                        <input type="radio" id="size-medium" name="stall-size" value="medium">
+                        <label for="size-medium">Medium (10x20 ft)</label>
+                    </div>
+                    <div class="option-item">
+                        <input type="radio" id="size-large" name="stall-size" value="large">
+                        <label for="size-large">Large (20x20 ft)</label>
+                    </div>
+                </div>
+                
+                <div class="option-group">
+                    <h3>TV Displays</h3>
+                    <div class="option-item">
+                        <input type="checkbox" id="option-tv-small" class="furniture-option" data-type="tv-small" data-width="60" data-height="40">
+                        <label for="option-tv-small">Small TV (32")</label>
+                        <div class="quantity-control" data-for="option-tv-small">
+                            <button class="quantity-minus">-</button>
+                            <span>1</span>
+                            <button class="quantity-plus">+</button>
+                        </div>
+                    </div>
+                    <div class="option-item">
+                        <input type="checkbox" id="option-tv-medium" class="furniture-option" data-type="tv-medium" data-width="80" data-height="50">
+                        <label for="option-tv-medium">Medium TV (55")</label>
+                        <div class="quantity-control" data-for="option-tv-medium">
+                            <button class="quantity-minus">-</button>
+                            <span>1</span>
+                            <button class="quantity-plus">+</button>
+                        </div>
+                    </div>
+                    <div class="option-item">
+                        <input type="checkbox" id="option-tv-large" class="furniture-option" data-type="tv-large" data-width="100" data-height="60">
+                        <label for="option-tv-large">Large TV (75")</label>
+                        <div class="quantity-control" data-for="option-tv-large">
+                            <button class="quantity-minus">-</button>
+                            <span>1</span>
+                            <button class="quantity-plus">+</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="option-group">
+                    <h3>Furniture</h3>
+                    <div class="option-item">
+                        <input type="checkbox" id="option-chair" class="furniture-option" data-type="chair" data-width="30" data-height="30">
+                        <label for="option-chair">Chairs</label>
+                        <div class="quantity-control" data-for="option-chair">
+                            <button class="quantity-minus">-</button>
+                            <span>2</span>
+                            <button class="quantity-plus">+</button>
+                        </div>
+                    </div>
+                    <div class="option-item">
+                        <input type="checkbox" id="option-table" class="furniture-option" data-type="table" data-width="60" data-height="60">
+                        <label for="option-table">Tables</label>
+                        <div class="quantity-control" data-for="option-table">
+                            <button class="quantity-minus">-</button>
+                            <span>1</span>
+                            <button class="quantity-plus">+</button>
+                        </div>
+                    </div>
+                    <div class="option-item">
+                        <input type="checkbox" id="option-counter" class="furniture-option" data-type="counter" data-width="100" data-height="40">
+                        <label for="option-counter">Reception Counter</label>
+                        <div class="quantity-control" data-for="option-counter">
+                            <button class="quantity-minus">-</button>
+                            <span>1</span>
+                            <button class="quantity-plus">+</button>
+                        </div>
+                    </div>
+                    <div class="option-item">
+                        <input type="checkbox" id="option-sofa" class="furniture-option" data-type="sofa" data-width="120" data-height="60">
+                        <label for="option-sofa">Sofa/Lounge</label>
+                        <div class="quantity-control" data-for="option-sofa">
+                            <button class="quantity-minus">-</button>
+                            <span>1</span>
+                            <button class="quantity-plus">+</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="option-group">
+                    <h3>Display & Branding</h3>
+                    <div class="option-item">
+                        <input type="checkbox" id="option-banner" class="furniture-option" data-type="banner" data-width="120" data-height="30">
+                        <label for="option-banner">Promotional Banner</label>
+                        <div class="quantity-control" data-for="option-banner">
+                            <button class="quantity-minus">-</button>
+                            <span>1</span>
+                            <button class="quantity-plus">+</button>
+                        </div>
+                    </div>
+                    <div class="option-item">
+                        <input type="checkbox" id="option-shelves" class="furniture-option" data-type="shelves" data-width="80" data-height="120">
+                        <label for="option-shelves">Display Shelves</label>
+                        <div class="quantity-control" data-for="option-shelves">
+                            <button class="quantity-minus">-</button>
+                            <span>1</span>
+                            <button class="quantity-plus">+</button>
+                        </div>
+                    </div>
+                    <div class="option-item">
+                        <input type="checkbox" id="option-brochure" class="furniture-option" data-type="brochure-stand" data-width="40" data-height="60">
+                        <label for="option-brochure">Brochure Stand</label>
+                        <div class="quantity-control" data-for="option-brochure">
+                            <button class="quantity-minus">-</button>
+                            <span>1</span>
+                            <button class="quantity-plus">+</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="option-group">
+                    <h3>Additional Features</h3>
+                    <div class="option-item">
+                        <input type="checkbox" id="option-lighting" checked>
+                        <label for="option-lighting">Spot Lighting</label>
+                    </div>
+                    <div class="option-item">
+                        <input type="checkbox" id="option-floor-mat" checked>
+                        <label for="option-floor-mat">Branded Floor Mat</label>
+                    </div>
+                    <div class="option-item">
+                        <input type="checkbox" id="option-power">
+                        <label for="option-power">Power Outlets</label>
+                    </div>
+                    <div class="option-item">
+                        <input type="checkbox" id="option-wifi">
+                        <label for="option-wifi">WiFi Hotspot</label>
+                    </div>
+                    <div class="option-item">
+                        <input type="checkbox" id="option-storage">
+                        <label for="option-storage">Storage Cabinets</label>
+                    </div>
+                    <div class="option-item">
+                        <input type="checkbox" id="option-sound">
+                        <label for="option-sound">Sound System</label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="visualization-panel">
+                <h2>Your Custom Stall Layout</h2>
+                <div class="layout-container" id="layout-container">
+                    <!-- Layout items will be added here dynamically -->
+                </div>
+                
+                <div class="upload-section">
+                    <h3>Upload Custom Images</h3>
+                    <p>Add your logo, products, or branding images (multiple allowed)</p>
+                    <label for="file-input" class="upload-btn">Choose Images</label>
+                    <input type="file" id="file-input" accept="image/*" multiple>
+                    <div class="image-preview-container" id="image-preview-container"></div>
+                </div>
+                
+                <div class="client-info">
+                    <h3>Your Information</h3>
+                    <input type="url" id="website-url" placeholder="Your website URL (optional)">
+                    <textarea id="client-notes" placeholder="Enter your special requirements, notes about your design, or additional elements you'd like included..."></textarea>
+                </div>
+                
+                <div class="loading" id="loading-indicator">
+                    <p>Submitting your design...</p>
+                </div>
+                
+                <div class="success-message" id="success-message">
+                    <p>Design submitted successfully! We'll contact you soon.</p>
+                </div>
+                
+                <div class="submit-section">
+                    <button class="submit-btn" id="submit-btn">Submit Design</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const layoutContainer = document.getElementById('layout-container');
+            const clientNotes = document.getElementById('client-notes');
+            const websiteUrl = document.getElementById('website-url');
+            const fileInput = document.getElementById('file-input');
+            const imagePreviewContainer = document.getElementById('image-preview-container');
+            const submitBtn = document.getElementById('submit-btn');
+            const loadingIndicator = document.getElementById('loading-indicator');
+            const successMessage = document.getElementById('success-message');
+            
+            // API Configuration
+            const API_URL = "https://magicloops.dev/api/loop/96bfbcdc-0096-4e99-b423-5771c269f299/run";
+            
+            // Current configuration
+            let config = {
+                size: 'small',
+                items: {},
+                features: {
+                    lighting: true,
+                    'floor-mat': true,
+                    power: false,
+                    wifi: false,
+                    storage: false,
+                    sound: false
+                },
+                customImages: [],
+                websiteUrl: ''
+            };
+            
+            // Initialize the app
+            function init() {
+                setupEventListeners();
+                updateLayout();
+            }
+            
+            // Set up all event listeners
+            function setupEventListeners() {
+                // Stall size radio buttons
+                document.querySelectorAll('input[name="stall-size"]').forEach(radio => {
+                    radio.addEventListener('change', function() {
+                        config.size = this.value;
+                        updateLayout();
+                    });
+                });
+                
+                // Furniture checkboxes
+                document.querySelectorAll('.furniture-option').forEach(checkbox => {
+                    checkbox.addEventListener('change', function() {
+                        const type = this.dataset.type;
+                        const quantityControl = document.querySelector(`.quantity-control[data-for="option-${type}"]`);
+                        
+                        if (this.checked) {
+                            const quantity = parseInt(quantityControl.querySelector('span').textContent);
+                            config.items[type] = {
+                                quantity: quantity,
+                                width: parseInt(this.dataset.width),
+                                height: parseInt(this.dataset.height)
+                            };
+                        } else {
+                            delete config.items[type];
+                        }
+                        
+                        updateLayout();
+                    });
+                });
+                
+                // Additional features checkboxes
+                document.querySelectorAll('.option-group:last-child input[type="checkbox"]').forEach(checkbox => {
+                    checkbox.addEventListener('change', function() {
+                        const feature = this.id.replace('option-', '');
+                        config.features[feature] = this.checked;
+                    });
+                });
+                
+                // Quantity controls
+                document.querySelectorAll('.quantity-control').forEach(control => {
+                    const minusBtn = control.querySelector('.quantity-minus');
+                    const plusBtn = control.querySelector('.quantity-plus');
+                    const quantitySpan = control.querySelector('span');
+                    const type = control.dataset.for.replace('option-', '');
+                    const checkbox = document.getElementById(`option-${type}`);
+                    
+                    minusBtn.addEventListener('click', function() {
+                        let quantity = parseInt(quantitySpan.textContent);
+                        if (quantity > 1) {
+                            quantity--;
+                            quantitySpan.textContent = quantity;
+                            
+                            if (checkbox.checked && config.items[type]) {
+                                config.items[type].quantity = quantity;
+                                updateLayout();
+                            }
+                        }
+                    });
+                    
+                    plusBtn.addEventListener('click', function() {
+                        let quantity = parseInt(quantitySpan.textContent);
+                        if (quantity < 10) {
+                            quantity++;
+                            quantitySpan.textContent = quantity;
+                            
+                            if (checkbox.checked && config.items[type]) {
+                                config.items[type].quantity = quantity;
+                                updateLayout();
+                            }
+                        }
+                    });
+                });
+                
+                // Website URL input
+                websiteUrl.addEventListener('change', function() {
+                    config.websiteUrl = this.value;
+                });
+                
+                // File upload handling
+                fileInput.addEventListener('change', function(e) {
+                    const files = e.target.files;
+                    if (files && files.length > 0) {
+                        Array.from(files).forEach(file => {
+                            const reader = new FileReader();
+                            reader.onload = function(event) {
+                                config.customImages.push({
+                                    url: event.target.result,
+                                    name: file.name
+                                });
+                                
+                                // Create preview with remove button
+                                const previewDiv = document.createElement('div');
+                                previewDiv.style.position = 'relative';
+                                
+                                const img = document.createElement('img');
+                                img.src = event.target.result;
+                                img.className = 'image-preview';
+                                
+                                const removeBtn = document.createElement('div');
+                                removeBtn.className = 'remove-image';
+                                removeBtn.innerHTML = '×';
+                                removeBtn.addEventListener('click', function() {
+                                    previewDiv.remove();
+                                    config.customImages = config.customImages.filter(img => img.url !== event.target.result);
+                                });
+                                
+                                previewDiv.appendChild(img);
+                                previewDiv.appendChild(removeBtn);
+                                imagePreviewContainer.appendChild(previewDiv);
+                                
+                                // Add to layout automatically
+                                addCustomImageToLayout(event.target.result);
+                            };
+                            reader.readAsDataURL(file);
+                        });
+                    }
+                });
+                
+                // Submit button
+                submitBtn.addEventListener('click', async function() {
+                    await submitDesign();
+                });
+            }
+            
+            // Update the layout visualization
+            function updateLayout() {
+                // Clear the layout container
+                layoutContainer.innerHTML = '';
+                
+                // Set container dimensions based on stall size
+                let containerWidth, containerHeight;
+                switch(config.size) {
+                    case 'small':
+                        containerWidth = 300;
+                        containerHeight = 300;
+                        break;
+                    case 'medium':
+                        containerWidth = 600;
+                        containerHeight = 300;
+                        break;
+                    case 'large':
+                        containerWidth = 600;
+                        containerHeight = 600;
+                        break;
+                }
+                
+                layoutContainer.style.width = `${containerWidth}px`;
+                layoutContainer.style.height = `${containerHeight}px`;
+                
+                // Add background mat if selected
+                if (config.features['floor-mat']) {
+                    const matElement = document.createElement('div');
+                    matElement.className = 'layout-item floor-mat';
+                    matElement.style.width = `${containerWidth}px`;
+                    matElement.style.height = `${containerHeight}px`;
+                    matElement.style.left = '0';
+                    matElement.style.top = '0';
+                    matElement.style.opacity = '0.3';
+                    matElement.style.zIndex = '0';
+                    layoutContainer.appendChild(matElement);
+                }
+                
+                // Add items to the layout
+                Object.keys(config.items).forEach(type => {
+                    const item = config.items[type];
+                    const count = item.quantity;
+                    const width = item.width;
+                    const height = item.height;
+                    
+                    // Scale factor to fit items in the container
+                    const scale = 0.7 * Math.min(
+                        containerWidth / (width * 2),
+                        containerHeight / (height * 2)
+                    );
+                    
+                    // Position items in a grid pattern
+                    const cols = Math.ceil(Math.sqrt(count));
+                    const rows = Math.ceil(count / cols);
+                    
+                    const itemWidth = width * scale;
+                    const itemHeight = height * scale;
+                    
+                    const spacingX = containerWidth / (cols + 1);
+                    const spacingY = containerHeight / (rows + 1);
+                    
+                    for (let i = 0; i < count; i++) {
+                        const col = i % cols;
+                        const row = Math.floor(i / cols);
+                        
+                        const left = (col + 1) * spacingX - itemWidth / 2;
+                        const top = (row + 1) * spacingY - itemHeight / 2;
+                        
+                        const itemElement = document.createElement('div');
+                        itemElement.className = `layout-item ${type}`;
+                        itemElement.style.width = `${itemWidth}px`;
+                        itemElement.style.height = `${itemHeight}px`;
+                        itemElement.style.left = `${left}px`;
+                        itemElement.style.top = `${top}px`;
+                        itemElement.style.zIndex = '1';
+                        itemElement.dataset.type = type;
+                        
+                        // Make items draggable
+                        makeDraggable(itemElement);
+                        
+                        layoutContainer.appendChild(itemElement);
+                    }
+                });
+                
+                // Add custom images to layout
+                config.customImages.forEach((image, index) => {
+                    addCustomImageToLayout(image.url, index);
+                });
+            }
+            
+            // Add custom image to layout
+            function addCustomImageToLayout(imageSrc, index = 0) {
+                const containerWidth = parseInt(layoutContainer.style.width);
+                const containerHeight = parseInt(layoutContainer.style.height);
+                
+                const itemElement = document.createElement('div');
+                itemElement.className = 'layout-item custom-upload';
+                itemElement.style.width = '100px';
+                itemElement.style.height = '100px';
+                itemElement.style.left = `${containerWidth/2 - 50 + (index * 110)}px`;
+                itemElement.style.top = `${containerHeight/2 - 50}px`;
+                itemElement.style.zIndex = '3';
+                itemElement.style.backgroundImage = `url('${imageSrc}')`;
+                itemElement.dataset.type = 'custom';
+                
+                // Make item draggable
+                makeDraggable(itemElement);
+                
+                layoutContainer.appendChild(itemElement);
+            }
+            
+            // Make an element draggable
+            function makeDraggable(element) {
+                let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+                
+                element.onmousedown = dragMouseDown;
+                
+                function dragMouseDown(e) {
+                    e = e || window.event;
+                    e.preventDefault();
+                    
+                    // Get the mouse cursor position at startup
+                    pos3 = e.clientX;
+                    pos4 = e.clientY;
+                    
+                    document.onmouseup = closeDragElement;
+                    document.onmousemove = elementDrag;
+                }
+                
+                function elementDrag(e) {
+                    e = e || window.event;
+                    e.preventDefault();
+                    
+                    // Calculate the new cursor position
+                    pos1 = pos3 - e.clientX;
+                    pos2 = pos4 - e.clientY;
+                    pos3 = e.clientX;
+                    pos4 = e.clientY;
+                    
+                    // Set the element's new position
+                    const newTop = (element.offsetTop - pos2) + 'px';
+                    const newLeft = (element.offsetLeft - pos1) + 'px';
+                    
+                    // Check boundaries
+                    const containerRect = layoutContainer.getBoundingClientRect();
+                    const elementRect = element.getBoundingClientRect();
+                    
+                    if (
+                        newTop.replace('px', '') >= 0 && 
+                        newLeft.replace('px', '') >= 0 &&
+                        (parseInt(newLeft) + elementRect.width) <= containerRect.width &&
+                        (parseInt(newTop) + elementRect.height) <= containerRect.height
+                    ) {
+                        element.style.top = newTop;
+                        element.style.left = newLeft;
+                    }
+                }
+                
+                function closeDragElement() {
+                    // Stop moving when mouse button is released
+                    document.onmouseup = null;
+                    document.onmousemove = null;
+                }
+            }
+            
+            // Prepare the API request data in the new format
+            function prepareApiData() {
+                return {
+                    "tv_options": {
+                        "Small": config.items['tv-small']?.quantity || 0,
+                        "Medium": config.items['tv-medium']?.quantity || 0,
+                        "Large": config.items['tv-large']?.quantity || 0
+                    },
+                    "additional_elements": {
+                        "sofa": config.items['sofa']?.quantity > 0 || false,
+                        "storage_cabinets": config.features.storage || false,
+                        "sound_system": config.features.sound || false,
+                        "furniture_categories": {
+                            "chairs": config.items['chair']?.quantity || 0,
+                            "tables": config.items['table']?.quantity || 0
+                        }
+                    },
+                    "image_uploads": config.customImages.map(img => ({
+                        "filename": img.name
+                    })),
+                    "website_url": config.websiteUrl || "",
+                    "user_experience": {
+                        "visual_feedback": true,
+                        "clear_organization": true
+                    }
+                };
+            }
+            
+            // Submit the design to the API
+            async function submitDesign() {
+                // Show loading indicator
+                submitBtn.disabled = true;
+                loadingIndicator.style.display = 'block';
+                successMessage.style.display = 'none';
+                
+                try {
+                    // Prepare the API request data
+                    const postData = prepareApiData();
+
+                    // Make the API call
+                    const response = await fetch(API_URL, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(postData)
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
+                    const result = await response.json();
+                    console.log("API Response:", result);
+                    
+                    // Show success message
+                    successMessage.style.display = 'block';
+                    setTimeout(() => {
+                        successMessage.style.display = 'none';
+                    }, 5000);
+                    
+                } catch (error) {
+                    console.error("Error submitting design:", error);
+                    alert("There was an error submitting your design. Please try again.");
+                } finally {
+                    // Hide loading indicator
+                    submitBtn.disabled = false;
+                    loadingIndicator.style.display = 'none';
+                }
+            }
+            
+            // Initialize the application
+            init();
+        });
+    </script>
+</body>
+</html>
