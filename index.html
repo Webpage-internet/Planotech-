@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sheryas Love Incara| Planotech</title>
+    <title>Premium Stall Design Tool | Planotech</title>
     <meta name="description" content="Create custom exhibition stall designs with our advanced configuration tool">
     <style>
         :root {
@@ -538,4 +538,447 @@
                     
                     <div class="form-group">
                         <label for="client-notes">Special Requirements</label>
-                        <textarea id="client
+                        <textarea id="client-notes" class="form-control" placeholder="Enter any special requirements or additional elements you'd like included..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="status-message loading" id="loading-indicator">
+                    <p>Submitting your design...</p>
+                </div>
+                
+                <div class="status-message success" id="success-message">
+                    <p>Design submitted successfully! We'll contact you soon.</p>
+                </div>
+                
+                <div class="status-message error" id="error-message">
+                    <p id="error-text">There was an error submitting your design. Please try again.</p>
+                </div>
+                
+                <div class="submit-section">
+                    <button class="btn btn-primary" id="submit-btn">Submit Design Request</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>© 2023 Planotech Events. All rights reserved.</p>
+            <div class="footer-links">
+                <a href="https://www.planotechevents.com/" target="_blank" class="footer-link">Planotech Events</a>
+                <a href="https://www.planotechmediahouse.com/" target="_blank" class="footer-link">Planotech Media House</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Configuration
+            const config = {
+                telegram: {
+                    botToken: '8067818169:AAGkZmdH83rfRbwVgwOHuM99y8V0iekLcI4',
+                    chatId: '7076125469'
+                },
+                stall: {
+                    width: 10,
+                    height: 10,
+                    items: {},
+                    features: {
+                        lighting: true,
+                        floorMat: true,
+                        power: false,
+                        wifi: false,
+                        storage: false,
+                        sound: false
+                    }
+                },
+                uploadedImages: []
+            };
+
+            // DOM Elements
+            const elements = {
+                clientName: document.getElementById('client-name'),
+                clientEmail: document.getElementById('client-email'),
+                clientPhone: document.getElementById('client-phone'),
+                clientCompany: document.getElementById('client-company'),
+                clientNotes: document.getElementById('client-notes'),
+                websiteUrl: document.getElementById('website-url'),
+                stallWidth: document.getElementById('stall-width'),
+                stallHeight: document.getElementById('stall-height'),
+                submitBtn: document.getElementById('submit-btn'),
+                loadingIndicator: document.getElementById('loading-indicator'),
+                successMessage: document.getElementById('success-message'),
+                errorMessage: document.getElementById('error-message'),
+                errorText: document.getElementById('error-text'),
+                fileInput: document.getElementById('file-input'),
+                previewContainer: document.getElementById('preview-container')
+            };
+
+            // Initialize the application
+            function init() {
+                setupEventListeners();
+            }
+
+            // Set up event listeners
+            function setupEventListeners() {
+                // Stall dimensions
+                elements.stallWidth.addEventListener('change', updateStallDimensions);
+                elements.stallHeight.addEventListener('change', updateStallDimensions);
+
+                // Furniture options
+                document.querySelectorAll('.furniture-option').forEach(checkbox => {
+                    checkbox.addEventListener('change', handleFurnitureChange);
+                });
+
+                // Quantity controls
+                document.querySelectorAll('.quantity-control').forEach(control => {
+                    const minusBtn = control.querySelector('.quantity-minus');
+                    const plusBtn = control.querySelector('.quantity-plus');
+                    const quantitySpan = control.querySelector('span');
+                    const type = control.dataset.for.replace('option-', '');
+                    const checkbox = document.getElementById(`option-${type}`);
+
+                    minusBtn.addEventListener('click', () => adjustQuantity(type, -1, checkbox));
+                    plusBtn.addEventListener('click', () => adjustQuantity(type, 1, checkbox));
+                });
+
+                // Additional features
+                document.querySelectorAll('.option-group:last-child input[type="checkbox"]').forEach(checkbox => {
+                    checkbox.addEventListener('change', function() {
+                        const feature = this.id.replace('option-', '');
+                        config.stall.features[feature] = this.checked;
+                    });
+                });
+
+                // Image upload
+                elements.fileInput.addEventListener('change', handleImageUpload);
+
+                // Form submission
+                elements.submitBtn.addEventListener('click', submitDesign);
+            }
+
+            // Update stall dimensions
+            function updateStallDimensions() {
+                config.stall.width = parseInt(elements.stallWidth.value);
+                config.stall.height = parseInt(elements.stallHeight.value);
+            }
+
+            // Handle furniture checkbox changes
+            function handleFurnitureChange() {
+                const type = this.dataset.type;
+                const quantityControl = document.querySelector(`.quantity-control[data-for="option-${type}"]`);
+                
+                if (this.checked) {
+                    const quantity = parseInt(quantityControl.querySelector('span').textContent);
+                    config.stall.items[type] = {
+                        quantity: quantity,
+                        width: parseInt(this.dataset.width),
+                        height: parseInt(this.dataset.height)
+                    };
+                } else {
+                    delete config.stall.items[type];
+                }
+            }
+
+            // Adjust quantity
+            function adjustQuantity(type, change, checkbox) {
+                const quantityControl = document.querySelector(`.quantity-control[data-for="option-${type}"]`);
+                let quantity = parseInt(quantityControl.querySelector('span').textContent);
+                
+                quantity += change;
+                if (quantity < 1) quantity = 1;
+                if (quantity > 10) quantity = 10;
+                
+                quantityControl.querySelector('span').textContent = quantity;
+                
+                if (checkbox.checked && config.stall.items[type]) {
+                    config.stall.items[type].quantity = quantity;
+                }
+            }
+
+            // Handle image upload
+            function handleImageUpload(e) {
+                const files = e.target.files;
+                
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
+                    
+                    if (!file.type.match('image.*')) {
+                        continue;
+                    }
+                    
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(event) {
+                        const imageData = event.target.result;
+                        config.uploadedImages.push(imageData);
+                        addImagePreview(imageData);
+                    };
+                    
+                    reader.readAsDataURL(file);
+                }
+                
+                // Reset file input to allow uploading same files again
+                elements.fileInput.value = '';
+            }
+
+            // Add image preview
+            function addImagePreview(imageData) {
+                const previewDiv = document.createElement('div');
+                previewDiv.className = 'image-preview';
+                
+                const img = document.createElement('img');
+                img.src = imageData;
+                previewDiv.appendChild(img);
+                
+                const removeBtn = document.createElement('div');
+                removeBtn.className = 'remove-image';
+                removeBtn.innerHTML = '×';
+                removeBtn.addEventListener('click', function() {
+                    previewDiv.remove();
+                    const index = config.uploadedImages.indexOf(imageData);
+                    if (index !== -1) {
+                        config.uploadedImages.splice(index, 1);
+                    }
+                });
+                
+                previewDiv.appendChild(removeBtn);
+                elements.previewContainer.appendChild(previewDiv);
+            }
+
+            // Prepare design data
+            function prepareDesignData() {
+                return {
+                    stallDimensions: {
+                        width: config.stall.width,
+                        height: config.stall.height,
+                        unit: 'feet'
+                    },
+                    tvOptions: {
+                        small: config.stall.items['tv-small']?.quantity || 0,
+                        medium: config.stall.items['tv-medium']?.quantity || 0,
+                        large: config.stall.items['tv-large']?.quantity || 0
+                    },
+                    furniture: {
+                        chairs: config.stall.items['chair']?.quantity || 0,
+                        tables: config.stall.items['table']?.quantity || 0,
+                        counters: config.stall.items['counter']?.quantity || 0,
+                        sofas: config.stall.items['sofa']?.quantity || 0
+                    },
+                    brandingElements: {
+                        banners: config.stall.items['banner']?.quantity || 0,
+                        shelves: config.stall.items['shelves']?.quantity || 0,
+                        brochureStands: config.stall.items['brochure-stand']?.quantity || 0
+                    },
+                    features: config.stall.features,
+                    clientInfo: {
+                        name: elements.clientName.value,
+                        email: elements.clientEmail.value,
+                        phone: elements.clientPhone.value || '',
+                        company: elements.clientCompany.value || '',
+                        website: elements.websiteUrl.value || ''
+                    },
+                    notes: elements.clientNotes.value || '',
+                    uploadedImages: config.uploadedImages,
+                    submittedAt: new Date().toISOString()
+                };
+            }
+
+            // Send Telegram notification
+            async function sendTelegramNotification(designData) {
+                const message = formatTelegramMessage(designData);
+                
+                try {
+                    // First send the text message
+                    const textResponse = await fetch(`https://api.telegram.org/bot${config.telegram.botToken}/sendMessage`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            chat_id: config.telegram.chatId,
+                            text: message,
+                            parse_mode: 'Markdown'
+                        })
+                    });
+                    
+                    const textResult = await textResponse.json();
+                    
+                    // Then send each image
+                    for (const imageData of designData.uploadedImages) {
+                        const formData = new FormData();
+                        formData.append('chat_id', config.telegram.chatId);
+                        formData.append('photo', dataURLtoBlob(imageData), 'layout.png');
+                        
+                        await fetch(`https://api.telegram.org/bot${config.telegram.botToken}/sendPhoto`, {
+                            method: 'POST',
+                            body: formData
+                        });
+                    }
+                    
+                    return textResult;
+                } catch (error) {
+                    console.error('Telegram notification failed:', error);
+                    throw error;
+                }
+            }
+
+            // Convert data URL to Blob
+            function dataURLtoBlob(dataURL) {
+                const arr = dataURL.split(',');
+                const mime = arr[0].match(/:(.*?);/)[1];
+                const bstr = atob(arr[1]);
+                let n = bstr.length;
+                const u8arr = new Uint8Array(n);
+                
+                while (n--) {
+                    u8arr[n] = bstr.charCodeAt(n);
+                }
+                
+                return new Blob([u8arr], { type: mime });
+            }
+
+            // Format Telegram message
+            function formatTelegramMessage(designData) {
+                const featuresList = Object.entries(designData.features)
+                    .map(([feature, enabled]) => `${enabled ? '✅' : '❌'} ${feature.replace(/([A-Z])/g, ' $1').toLowerCase()}`)
+                    .join('\n');
+                
+                const tvOptions = [
+                    designData.tvOptions.small > 0 ? `• Small (32"): ${designData.tvOptions.small}` : '',
+                    designData.tvOptions.medium > 0 ? `• Medium (55"): ${designData.tvOptions.medium}` : '',
+                    designData.tvOptions.large > 0 ? `• Large (75"): ${designData.tvOptions.large}` : ''
+                ].filter(Boolean).join('\n') || 'None selected';
+
+                const furnitureList = [
+                    designData.furniture.chairs > 0 ? `• Chairs: ${designData.furniture.chairs}` : '',
+                    designData.furniture.tables > 0 ? `• Tables: ${designData.furniture.tables}` : '',
+                    designData.furniture.counters > 0 ? `• Counters: ${designData.furniture.counters}` : '',
+                    designData.furniture.sofas > 0 ? `• Sofas: ${designData.furniture.sofas}` : ''
+                ].filter(Boolean).join('\n') || 'None selected';
+
+                const brandingList = [
+                    designData.brandingElements.banners > 0 ? `• Banners: ${designData.brandingElements.banners}` : '',
+                    designData.brandingElements.shelves > 0 ? `• Shelves: ${designData.brandingElements.shelves}` : '',
+                    designData.brandingElements.brochureStands > 0 ? `• Brochure stands: ${designData.brandingElements.brochureStands}` : ''
+                ].filter(Boolean).join('\n') || 'None selected';
+
+                return `
+🛠 *NEW STALL DESIGN REQUEST* 🛠
+--------------------------------
+*Client Information*
+👤 Name: ${designData.clientInfo.name}
+🏢 Company: ${designData.clientInfo.company || 'Not provided'}
+📧 Email: ${designData.clientInfo.email}
+📞 Phone: ${designData.clientInfo.phone || 'Not provided'}
+🌐 Website: ${designData.clientInfo.website || 'Not provided'}
+
+*Stall Specifications*
+📏 Size: ${designData.stallDimensions.width} × ${designData.stallDimensions.height} ft
+
+*TV Displays*
+${tvOptions}
+
+*Furniture*
+${furnitureList}
+
+*Branding Elements*
+${brandingList}
+
+*Additional Features*
+${featuresList}
+
+*Special Requests*
+${designData.notes || 'None provided'}
+
+*Submitted At*
+🕒 ${new Date(designData.submittedAt).toLocaleString()}
+
+*Images Attached*: ${designData.uploadedImages.length}
+`;
+            }
+
+            // Submit design
+            async function submitDesign() {
+                // Validate form
+                if (!elements.clientName.value || !elements.clientEmail.value) {
+                    showError('Please fill in your name and email address');
+                    return;
+                }
+
+                // Show loading state
+                elements.submitBtn.disabled = true;
+                elements.loadingIndicator.style.display = 'block';
+                elements.successMessage.style.display = 'none';
+                elements.errorMessage.style.display = 'none';
+
+                try {
+                    const designData = prepareDesignData();
+                    
+                    // Send to Telegram
+                    const telegramResponse = await sendTelegramNotification(designData);
+                    
+                    if (!telegramResponse.ok) {
+                        throw new Error('Telegram notification failed');
+                    }
+                    
+                    // Show success
+                    elements.successMessage.style.display = 'block';
+                    
+                    // Reset form
+                    resetForm();
+                    
+                    // Hide success message after delay
+                    setTimeout(() => {
+                        elements.successMessage.style.display = 'none';
+                    }, 5000);
+                    
+                } catch (error) {
+                    console.error('Submission error:', error);
+                    showError('There was an error submitting your design. Please try again.');
+                } finally {
+                    elements.submitBtn.disabled = false;
+                    elements.loadingIndicator.style.display = 'none';
+                }
+            }
+
+            // Show error message
+            function showError(message) {
+                elements.errorText.textContent = message;
+                elements.errorMessage.style.display = 'block';
+                
+                setTimeout(() => {
+                    elements.errorMessage.style.display = 'none';
+                }, 5000);
+            }
+
+            // Reset form
+            function resetForm() {
+                // Reset form fields
+                elements.clientName.value = '';
+                elements.clientEmail.value = '';
+                elements.clientPhone.value = '';
+                elements.clientCompany.value = '';
+                elements.websiteUrl.value = '';
+                elements.clientNotes.value = '';
+                
+                // Reset checkboxes
+                document.querySelectorAll('.furniture-option').forEach(checkbox => {
+                    checkbox.checked = false;
+                });
+                
+                // Reset quantities
+                document.querySelectorAll('.quantity-control span').forEach(span => {
+                    span.textContent = '1';
+                });
+                
+                // Reset layout
+                config.stall.items = {};
+                
+                // Reset images
+                config.uploadedImages = [];
+                elements.previewContainer.innerHTML = '';
+            }
+
+            // Start the application
+            init();
+        });
+    </script>
+</body>
+</html>
