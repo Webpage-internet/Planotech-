@@ -373,48 +373,6 @@
             background-size: 1em;
         }
         
-        /* Color options */
-        .color-options {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 10px;
-        }
-        
-        .color-option {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            cursor: pointer;
-            border: 2px solid #e2e8f0;
-            transition: transform 0.2s;
-            position: relative;
-        }
-        
-        .color-option.none-option {
-            background-color: #f8fafc;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .color-option.none-option::after {
-            content: "×";
-            color: #e53e3e;
-            font-weight: bold;
-            font-size: 16px;
-        }
-        
-        .color-option:hover {
-            transform: scale(1.1);
-        }
-        
-        .color-option.selected {
-            border-color: var(--primary-color);
-            transform: scale(1.1);
-            box-shadow: 0 0 0 2px rgba(66, 153, 225, 0.3);
-        }
-        
         /* Modal styles */
         .modal {
             display: none;
@@ -517,7 +475,7 @@
                         <input type="number" id="stall-width" min="1" value="10" class="form-control" style="width: 80px;">
                     </div>
                     <div class="option-item">
-                        <label for="stall-height">Height:</label>
+                        <label for="stall-height">Depth:</label>
                         <input type="number" id="stall-height" min="1" value="10" class="form-control" style="width: 80px;">
                     </div>
                     
@@ -628,14 +586,9 @@
                             <button class="quantity-plus">+</button>
                         </div>
                     </div>
-                    <div class="option-item">
-                        <input type="checkbox" id="option-tv-98" class="furniture-option" data-type="tv-98" data-width="140" data-height="85">
-                        <label for="option-tv-98">98" TV</label>
-                        <div class="quantity-control" data-for="option-tv-98">
-                            <button class="quantity-minus">-</button>
-                            <span>1</span>
-                            <button class="quantity-plus">+</button>
-                        </div>
+                    <div class="form-group">
+                        <label for="custom-tv-size">Custom TV Size</label>
+                        <input type="text" id="custom-tv-size" class="form-control" placeholder="Enter custom TV size (e.g., 100-inch)">
                     </div>
                 </div>
                 
@@ -669,6 +622,15 @@
                         </div>
                     </div>
                     <div class="option-item">
+                        <input type="checkbox" id="option-sofa-1" class="furniture-option" data-type="sofa-1" data-width="80" data-height="50">
+                        <label for="option-sofa-1">1-Seater Sofa</label>
+                        <div class="quantity-control" data-for="option-sofa-1">
+                            <button class="quantity-minus">-</button>
+                            <span>1</span>
+                            <button class="quantity-plus">+</button>
+                        </div>
+                    </div>
+                    <div class="option-item">
                         <input type="checkbox" id="option-sofa-2" class="furniture-option" data-type="sofa-2" data-width="120" data-height="60">
                         <label for="option-sofa-2">2-Seater Sofa</label>
                         <div class="quantity-control" data-for="option-sofa-2">
@@ -687,18 +649,18 @@
                         </div>
                     </div>
                     <div class="option-item">
-                        <input type="checkbox" id="option-sofa-l" class="furniture-option" data-type="sofa-l" data-width="240" data-height="80">
-                        <label for="option-sofa-l">L-Shaped Sofa</label>
-                        <div class="quantity-control" data-for="option-sofa-l">
+                        <input type="checkbox" id="option-bar-table" class="furniture-option" data-type="bar-table" data-width="150" data-height="50">
+                        <label for="option-bar-table">Bar Table</label>
+                        <div class="quantity-control" data-for="option-bar-table">
                             <button class="quantity-minus">-</button>
                             <span>1</span>
                             <button class="quantity-plus">+</button>
                         </div>
                     </div>
                     <div class="option-item">
-                        <input type="checkbox" id="option-sofa-u" class="furniture-option" data-type="sofa-u" data-width="300" data-height="90">
-                        <label for="option-sofa-u">U-Shaped Lounge</label>
-                        <div class="quantity-control" data-for="option-sofa-u">
+                        <input type="checkbox" id="option-t-poy" class="furniture-option" data-type="t-poy" data-width="40" data-height="40">
+                        <label for="option-t-poy">T-Poy</label>
+                        <div class="quantity-control" data-for="option-t-poy">
                             <button class="quantity-minus">-</button>
                             <span>1</span>
                             <button class="quantity-plus">+</button>
@@ -708,15 +670,6 @@
                 
                 <div class="option-group">
                     <h3>Display & Branding</h3>
-                    <div class="option-item">
-                        <input type="checkbox" id="option-banner" class="furniture-option" data-type="banner" data-width="120" data-height="30">
-                        <label for="option-banner">Promotional Banner</label>
-                        <div class="quantity-control" data-for="option-banner">
-                            <button class="quantity-minus">-</button>
-                            <span>1</span>
-                            <button class="quantity-plus">+</button>
-                        </div>
-                    </div>
                     <div class="option-item">
                         <input type="checkbox" id="option-shelves" class="furniture-option" data-type="shelves" data-width="80" data-height="120">
                         <label for="option-shelves">Display Shelves</label>
@@ -753,23 +706,6 @@
                         <label for="option-lighting">Spot Lighting</label>
                     </div>
                     <div class="option-item">
-                        <input type="checkbox" id="option-floor-mat" checked>
-                        <label for="option-floor-mat">Branded Floor Mat</label>
-                    </div>
-                    <div class="form-group">
-                        <label>Carpet Color</label>
-                        <div class="color-options">
-                            <div class="color-option none-option selected" data-color="none"></div>
-                            <div class="color-option" style="background-color: #2c5282;" data-color="navy"></div>
-                            <div class="color-option" style="background-color: #e53e3e;" data-color="red"></div>
-                            <div class="color-option" style="background-color: #38a169;" data-color="green"></div>
-                            <div class="color-option" style="background-color: #805ad5;" data-color="purple"></div>
-                            <div class="color-option" style="background-color: #d69e2e;" data-color="gold"></div>
-                            <div class="color-option" style="background-color: #000000;" data-color="black"></div>
-                            <div class="color-option" style="background-color: #ffffff; border: 1px solid #ccc;" data-color="white"></div>
-                        </div>
-                    </div>
-                    <div class="option-item">
                         <input type="checkbox" id="option-power">
                         <label for="option-power">Power Outlets</label>
                     </div>
@@ -799,6 +735,19 @@
                             <div class="radio-option">
                                 <input type="radio" id="creatives-no" name="2d-creatives" value="no" checked>
                                 <label for="creatives-no">No</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Any additional requirements?</label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" id="additional-yes" name="additional-requirements" value="yes">
+                                <label for="additional-yes">Yes</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" id="additional-no" name="additional-requirements" value="no" checked>
+                                <label for="additional-no">No</label>
                             </div>
                         </div>
                     </div>
@@ -902,18 +851,17 @@
                     height: 10,
                     faciaType: 'normal',
                     budget: 'high',
-                    carpetColor: 'none',
                     has2DCreatives: false,
+                    additionalRequirements: false,
+                    customTVSize: '',
                     items: {},
                     features: {
                         lighting: true,
-                        floorMat: true,
                         power: false,
                         wifi: false,
                         storage: false,
                         sound: false,
-                        meetingRoom: false,
-                        backlite: false
+                        meetingRoom: false
                     }
                 },
                 uploadedImages: []
@@ -942,9 +890,18 @@
                 budgetSelect: document.getElementById('budget'),
                 creativesYes: document.getElementById('creatives-yes'),
                 creativesNo: document.getElementById('creatives-no'),
-                colorOptions: document.querySelectorAll('.color-option'),
+                additionalYes: document.getElementById('additional-yes'),
+                additionalNo: document.getElementById('additional-no'),
+                customTVSize: document.getElementById('custom-tv-size'),
                 instagramModal: document.getElementById('instagram-modal'),
-                modalCloseBtn: document.getElementById('modal-close-btn')
+                modalCloseBtn: document.getElementById('modal-close-btn'),
+                // Additional features checkboxes
+                optionLighting: document.getElementById('option-lighting'),
+                optionPower: document.getElementById('option-power'),
+                optionWifi: document.getElementById('option-wifi'),
+                optionStorage: document.getElementById('option-storage'),
+                optionSound: document.getElementById('option-sound'),
+                optionMeeting: document.getElementById('option-meeting')
             };
 
             // Initialize the application
@@ -975,12 +932,24 @@
                     plusBtn.addEventListener('click', () => adjustQuantity(type, 1, checkbox));
                 });
 
-                // Additional features
-                document.querySelectorAll('.option-group:last-child input[type="checkbox"]').forEach(checkbox => {
-                    checkbox.addEventListener('change', function() {
-                        const feature = this.id.replace('option-', '');
-                        config.stall.features[feature] = this.checked;
-                    });
+                // Additional features checkboxes
+                elements.optionLighting.addEventListener('change', function() {
+                    config.stall.features.lighting = this.checked;
+                });
+                elements.optionPower.addEventListener('change', function() {
+                    config.stall.features.power = this.checked;
+                });
+                elements.optionWifi.addEventListener('change', function() {
+                    config.stall.features.wifi = this.checked;
+                });
+                elements.optionStorage.addEventListener('change', function() {
+                    config.stall.features.storage = this.checked;
+                });
+                elements.optionSound.addEventListener('change', function() {
+                    config.stall.features.sound = this.checked;
+                });
+                elements.optionMeeting.addEventListener('change', function() {
+                    config.stall.features.meetingRoom = this.checked;
                 });
 
                 // Facia type
@@ -1004,13 +973,17 @@
                     config.stall.has2DCreatives = false;
                 });
 
-                // Color options
-                elements.colorOptions.forEach(option => {
-                    option.addEventListener('click', function() {
-                        elements.colorOptions.forEach(opt => opt.classList.remove('selected'));
-                        this.classList.add('selected');
-                        config.stall.carpetColor = this.dataset.color;
-                    });
+                // Additional requirements
+                elements.additionalYes.addEventListener('change', function() {
+                    config.stall.additionalRequirements = true;
+                });
+                elements.additionalNo.addEventListener('change', function() {
+                    config.stall.additionalRequirements = false;
+                });
+
+                // Custom TV size
+                elements.customTVSize.addEventListener('change', function() {
+                    config.stall.customTVSize = this.value;
                 });
 
                 // Image upload
@@ -1128,8 +1101,9 @@
                     stallConfiguration: {
                         faciaType: config.stall.faciaType,
                         budget: config.stall.budget,
-                        carpetColor: config.stall.carpetColor,
-                        has2DCreatives: config.stall.has2DCreatives
+                        has2DCreatives: config.stall.has2DCreatives,
+                        additionalRequirements: config.stall.additionalRequirements,
+                        customTVSize: config.stall.customTVSize
                     },
                     tvOptions: {
                         tv24: config.stall.items['tv-24']?.quantity || 0,
@@ -1140,25 +1114,31 @@
                         tv55: config.stall.items['tv-55']?.quantity || 0,
                         tv65: config.stall.items['tv-65']?.quantity || 0,
                         tv75: config.stall.items['tv-75']?.quantity || 0,
-                        tv85: config.stall.items['tv-85']?.quantity || 0,
-                        tv98: config.stall.items['tv-98']?.quantity || 0
+                        tv85: config.stall.items['tv-85']?.quantity || 0
                     },
                     furniture: {
                         chairs: config.stall.items['chair']?.quantity || 0,
                         tables: config.stall.items['table']?.quantity || 0,
                         counters: config.stall.items['counter']?.quantity || 0,
+                        sofa1: config.stall.items['sofa-1']?.quantity || 0,
                         sofa2: config.stall.items['sofa-2']?.quantity || 0,
                         sofa3: config.stall.items['sofa-3']?.quantity || 0,
-                        sofaL: config.stall.items['sofa-l']?.quantity || 0,
-                        sofaU: config.stall.items['sofa-u']?.quantity || 0
+                        barTable: config.stall.items['bar-table']?.quantity || 0,
+                        tPoy: config.stall.items['t-poy']?.quantity || 0
                     },
                     brandingElements: {
-                        banners: config.stall.items['banner']?.quantity || 0,
                         shelves: config.stall.items['shelves']?.quantity || 0,
                         brochureStands: config.stall.items['brochure-stand']?.quantity || 0,
                         backlite: config.stall.items['backlite']?.quantity || 0
                     },
-                    features: config.stall.features,
+                    features: {
+                        lighting: elements.optionLighting.checked,
+                        power: elements.optionPower.checked,
+                        wifi: elements.optionWifi.checked,
+                        storage: elements.optionStorage.checked,
+                        sound: elements.optionSound.checked,
+                        meetingRoom: elements.optionMeeting.checked
+                    },
                     clientInfo: {
                         name: elements.clientName.value,
                         email: elements.clientEmail.value,
@@ -1226,40 +1206,53 @@
 
             // Format Telegram message
             function formatTelegramMessage(designData) {
-                const featuresList = Object.entries(designData.features)
-                    .map(([feature, enabled]) => `${enabled ? '✅' : '❌'} ${feature.replace(/([A-Z])/g, ' $1').toLowerCase()}`)
-                    .join('\n');
-                
-                const tvOptions = [
-                    designData.tvOptions.tv24 > 0 ? `• 24": ${designData.tvOptions.tv24}` : '',
-                    designData.tvOptions.tv32 > 0 ? `• 32": ${designData.tvOptions.tv32}` : '',
-                    designData.tvOptions.tv40 > 0 ? `• 40": ${designData.tvOptions.tv40}` : '',
-                    designData.tvOptions.tv43 > 0 ? `• 43": ${designData.tvOptions.tv43}` : '',
-                    designData.tvOptions.tv50 > 0 ? `• 50": ${designData.tvOptions.tv50}` : '',
-                    designData.tvOptions.tv55 > 0 ? `• 55": ${designData.tvOptions.tv55}` : '',
-                    designData.tvOptions.tv65 > 0 ? `• 65": ${designData.tvOptions.tv65}` : '',
-                    designData.tvOptions.tv75 > 0 ? `• 75": ${designData.tvOptions.tv75}` : '',
-                    designData.tvOptions.tv85 > 0 ? `• 85": ${designData.tvOptions.tv85}` : '',
-                    designData.tvOptions.tv98 > 0 ? `• 98": ${designData.tvOptions.tv98}` : ''
-                ].filter(Boolean).join('\n') || 'None selected';
+                // Format features list
+                const featuresList = [
+                    designData.features.lighting ? '✅ Spot Lighting' : '❌ Spot Lighting',
+                    designData.features.power ? '✅ Power Outlets' : '❌ Power Outlets',
+                    designData.features.wifi ? '✅ WiFi Hotspot' : '❌ WiFi Hotspot',
+                    designData.features.storage ? '✅ Storage Cabinets' : '❌ Storage Cabinets',
+                    designData.features.sound ? '✅ Sound System' : '❌ Sound System',
+                    designData.features.meetingRoom ? '✅ Meeting Room' : '❌ Meeting Room',
+                    designData.brandingElements.backlite > 0 ? '✅ Backlit Branding' : '❌ Backlit Branding'
+                ].join('\n');
 
-                const furnitureList = [
-                    designData.furniture.chairs > 0 ? `• Chairs: ${designData.furniture.chairs}` : '',
-                    designData.furniture.tables > 0 ? `• Tables: ${designData.furniture.tables}` : '',
-                    designData.furniture.counters > 0 ? `• Counters: ${designData.furniture.counters}` : '',
-                    designData.furniture.sofa2 > 0 ? `• 2-Seater Sofas: ${designData.furniture.sofa2}` : '',
-                    designData.furniture.sofa3 > 0 ? `• 3-Seater Sofas: ${designData.furniture.sofa3}` : '',
-                    designData.furniture.sofaL > 0 ? `• L-Shaped Sofas: ${designData.furniture.sofaL}` : '',
-                    designData.furniture.sofaU > 0 ? `• U-Shaped Lounges: ${designData.furniture.sofaU}` : ''
-                ].filter(Boolean).join('\n') || 'None selected';
+                // Format TV options
+                const tvOptions = [];
+                if (designData.tvOptions.tv24 > 0) tvOptions.push(`• 24": ${designData.tvOptions.tv24}`);
+                if (designData.tvOptions.tv32 > 0) tvOptions.push(`• 32": ${designData.tvOptions.tv32}`);
+                if (designData.tvOptions.tv40 > 0) tvOptions.push(`• 40": ${designData.tvOptions.tv40}`);
+                if (designData.tvOptions.tv43 > 0) tvOptions.push(`• 43": ${designData.tvOptions.tv43}`);
+                if (designData.tvOptions.tv50 > 0) tvOptions.push(`• 50": ${designData.tvOptions.tv50}`);
+                if (designData.tvOptions.tv55 > 0) tvOptions.push(`• 55": ${designData.tvOptions.tv55}`);
+                if (designData.tvOptions.tv65 > 0) tvOptions.push(`• 65": ${designData.tvOptions.tv65}`);
+                if (designData.tvOptions.tv75 > 0) tvOptions.push(`• 75": ${designData.tvOptions.tv75}`);
+                if (designData.tvOptions.tv85 > 0) tvOptions.push(`• 85": ${designData.tvOptions.tv85}`);
+                if (designData.stallConfiguration.customTVSize) {
+                    tvOptions.push(`• Custom: ${designData.stallConfiguration.customTVSize}`);
+                }
+                const tvDisplay = tvOptions.length > 0 ? tvOptions.join('\n') : 'None selected';
 
-                const brandingList = [
-                    designData.brandingElements.banners > 0 ? `• Banners: ${designData.brandingElements.banners}` : '',
-                    designData.brandingElements.shelves > 0 ? `• Shelves: ${designData.brandingElements.shelves}` : '',
-                    designData.brandingElements.brochureStands > 0 ? `• Brochure stands: ${designData.brandingElements.brochureStands}` : '',
-                    designData.brandingElements.backlite > 0 ? `• Backlit Branding: ${designData.brandingElements.backlite}` : ''
-                ].filter(Boolean).join('\n') || 'None selected';
+                // Format furniture
+                const furnitureList = [];
+                if (designData.furniture.chairs > 0) furnitureList.push(`• Chairs: ${designData.furniture.chairs}`);
+                if (designData.furniture.tables > 0) furnitureList.push(`• Tables: ${designData.furniture.tables}`);
+                if (designData.furniture.counters > 0) furnitureList.push(`• Counters: ${designData.furniture.counters}`);
+                if (designData.furniture.sofa1 > 0) furnitureList.push(`• 1-Seater Sofas: ${designData.furniture.sofa1}`);
+                if (designData.furniture.sofa2 > 0) furnitureList.push(`• 2-Seater Sofas: ${designData.furniture.sofa2}`);
+                if (designData.furniture.sofa3 > 0) furnitureList.push(`• 3-Seater Sofas: ${designData.furniture.sofa3}`);
+                if (designData.furniture.barTable > 0) furnitureList.push(`• Bar Tables: ${designData.furniture.barTable}`);
+                if (designData.furniture.tPoy > 0) furnitureList.push(`• T-Poys: ${designData.furniture.tPoy}`);
+                const furnitureDisplay = furnitureList.length > 0 ? furnitureList.join('\n') : 'None selected';
 
+                // Format branding elements
+                const brandingList = [];
+                if (designData.brandingElements.shelves > 0) brandingList.push(`• Shelves: ${designData.brandingElements.shelves}`);
+                if (designData.brandingElements.brochureStands > 0) brandingList.push(`• Brochure Stands: ${designData.brandingElements.brochureStands}`);
+                if (designData.brandingElements.backlite > 0) brandingList.push(`• Backlit Branding: ${designData.brandingElements.backlite}`);
+                const brandingDisplay = brandingList.length > 0 ? brandingList.join('\n') : 'None selected';
+
+                // Budget mapping
                 const budgetMap = {
                     'low': 'Low Budget',
                     'mid': 'Medium Budget',
@@ -1280,17 +1273,17 @@
 📏 Size: ${designData.stallDimensions.width} × ${designData.stallDimensions.height} ft
 🎨 Facia Type: ${designData.stallConfiguration.faciaType === 'normal' ? 'Normal' : 'Designer'}
 💰 Budget: ${budgetMap[designData.stallConfiguration.budget]}
-🧶 Carpet Color: ${designData.stallConfiguration.carpetColor === 'none' ? 'None' : designData.stallConfiguration.carpetColor}
 🎨 2D Creatives: ${designData.stallConfiguration.has2DCreatives ? 'Yes' : 'No'}
+➕ Additional Requirements: ${designData.stallConfiguration.additionalRequirements ? 'Yes' : 'No'}
 
 *TV Displays*
-${tvOptions}
+${tvDisplay}
 
 *Furniture*
-${furnitureList}
+${furnitureDisplay}
 
 *Branding Elements*
-${brandingList}
+${brandingDisplay}
 
 *Additional Features*
 ${featuresList}
@@ -1321,6 +1314,7 @@ ${designData.notes || 'None provided'}
 
                 try {
                     const designData = prepareDesignData();
+                    console.log("Data being sent:", designData);
                     
                     // Send to Telegram
                     const telegramResponse = await sendTelegramNotification(designData);
@@ -1371,6 +1365,9 @@ ${designData.notes || 'None provided'}
                 elements.clientCompany.value = '';
                 elements.websiteUrl.value = '';
                 elements.clientNotes.value = '';
+                elements.customTVSize.value = '';
+                elements.stallWidth.value = '10';
+                elements.stallHeight.value = '10';
                 
                 // Reset checkboxes
                 document.querySelectorAll('.furniture-option').forEach(checkbox => {
@@ -1379,35 +1376,43 @@ ${designData.notes || 'None provided'}
                 
                 // Reset quantities
                 document.querySelectorAll('.quantity-control span').forEach(span => {
-                    span.textContent = '1';
+                    if (span.textContent !== '1') {
+                        span.textContent = '1';
+                    }
                 });
                 
                 // Reset radio buttons
                 elements.faciaNormal.checked = true;
                 elements.creativesNo.checked = true;
+                elements.additionalNo.checked = true;
                 elements.budgetSelect.value = 'high';
                 
-                // Reset color selection
-                elements.colorOptions.forEach(opt => opt.classList.remove('selected'));
-                document.querySelector('.color-option[data-color="none"]').classList.add('selected');
+                // Reset additional features
+                elements.optionLighting.checked = true;
+                elements.optionPower.checked = false;
+                elements.optionWifi.checked = false;
+                elements.optionStorage.checked = false;
+                elements.optionSound.checked = false;
+                elements.optionMeeting.checked = false;
                 
                 // Reset layout
                 config.stall.items = {};
+                config.stall.width = 10;
+                config.stall.height = 10;
                 config.stall.faciaType = 'normal';
                 config.stall.budget = 'high';
-                config.stall.carpetColor = 'none';
                 config.stall.has2DCreatives = false;
+                config.stall.additionalRequirements = false;
+                config.stall.customTVSize = '';
                 
                 // Reset features
                 config.stall.features = {
                     lighting: true,
-                    floorMat: true,
                     power: false,
                     wifi: false,
                     storage: false,
                     sound: false,
-                    meetingRoom: false,
-                    backlite: false
+                    meetingRoom: false
                 };
                 
                 // Reset images
